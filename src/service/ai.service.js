@@ -18,6 +18,6 @@ async function generateResponse(prompt) {
     return "Something went wrong while generating response.";
   }
 }
-console.log("🔑 API Key Loaded:", process.env.GEMINI_API_KEY);
+console.log(" API Key Loaded:", process.env.GEMINI_API_KEY);
 
 module.exports = generateResponse;
