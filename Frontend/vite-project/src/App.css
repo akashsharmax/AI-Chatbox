@@ -10,6 +10,7 @@
   overflow: auto;
 }
 
+
 .chat-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -23,6 +24,7 @@
   font-size: 1.5rem;
   font-weight: 600;
 }
+
 
 .chat-messages {
   flex: 1;
@@ -98,7 +100,6 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* Chat Input Area */
 .chat-input {
   display: flex;
   padding: 1rem;
