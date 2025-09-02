@@ -2,46 +2,55 @@ require('dotenv').config();
 const app = require('./src/app');
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-const generateResponse = require('./src/service/ai.service');
+const generateResponse = require("./src/service/ai.service");
+const { text } = require('stream/consumers');
+
 
 const httpServer = createServer(app);
-
 const io = new Server(httpServer, {
-  cors: { origin: "http://localhost:5173" }
-});
- 
-  chatHistory = [];
 
+    cors: {
+        origin: "http://localhost:5173", 
+    }
+
+});
+
+const chatHistory = [
+
+]
 
 io.on("connection", (socket) => {
-  console.log(" User connected:", socket.id);
+    console.log("A user connected")
 
-  socket.on("disconnect", () => {
-    console.log(" User disconnected:", socket.id);
-  })
-
-  socket.on('ai-message', async (data) => {
-    console.log("AI message received:", data);
-    chatHistory.push({
-      role: "user",
-      parts: [{text: data}]
+    socket.on("disconnect", () => {
+        console.log("A user disconnected")
     });
 
-    const response = await generateResponse(data);
+    
 
-    chatHistory.push({
-      role: "model",
-      parts: [{text: response}]
-    });
+    socket.on('ai-message', async (data) => {
+        console.log("Ai message received:", data);
 
-    console.log(" AI response generated:", response);
-    socket.emit('ai-response', response);
-  });
+        chatHistory.push({
+            role: "user",
+            parts: [ { text: data } ]
+        });
 
- 
+        const mama = await generateResponse(chatHistory)
+
+        chatHistory.push({
+            role: "model",
+            parts: [ { text: mama } ]
+        });
+
+        socket.emit("ai-message-response", mama)
+
+    })
+
+
+
 });
 
-
 httpServer.listen(3000, () => {
-  console.log(' Server is running on port 3000');
+    console.log('Server is running on port 3000');
 })

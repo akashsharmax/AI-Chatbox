@@ -44,7 +44,7 @@ function App() {
     let socketInstance = io("http://localhost:3000"); 
     setSocket(socketInstance)
 
-    socketInstance.on('ai-response', (response) => {
+    socketInstance.on('ai-message-response', (response) => {
 
       const botMessage = {
         id: Date.now() + 1,
