@@ -3,54 +3,57 @@ const app = require('./src/app');
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const generateResponse = require("./src/service/ai.service");
-const { text } = require('stream/consumers');
 
 
 const httpServer = createServer(app);
+
+
 const io = new Server(httpServer, {
-
     cors: {
-        origin: "http://localhost:5173", 
+        origin: "*", 
+        methods: ["GET", "POST"]
     }
-
 });
 
-const chatHistory = [
 
-]
+const chatHistory = [];
+
 
 io.on("connection", (socket) => {
-    console.log("A user connected")
+    console.log(" A user connected:", socket.id);
 
     socket.on("disconnect", () => {
-        console.log("A user disconnected")
+        console.log(" A user disconnected:", socket.id);
     });
 
-    
-
-    socket.on('ai-message', async (data) => {
-        console.log("Ai message received:", data);
+    socket.on("ai-message", async (data) => {
+        console.log(" Ai message received:", data);
 
         chatHistory.push({
             role: "user",
-            parts: [ { text: data } ]
+            parts: [{ text: data }]
         });
 
-        const mama = await generateResponse(chatHistory)
+        try {
+            const mama = await generateResponse(chatHistory);
 
-        chatHistory.push({
-            role: "model",
-            parts: [ { text: mama } ]
-        });
+            chatHistory.push({
+                role: "model",
+                parts: [{ text: mama }]
+            });
 
-        socket.emit("ai-message-response", mama)
+            
+            socket.emit("ai-message-response", mama);
 
-    })
-
-
-
+        } catch (err) {
+            console.error(" Error generating AI response:", err);
+            socket.emit("ai-message-response", "Sorry, something went wrong.");
+        }
+    });
 });
 
-httpServer.listen(3000, () => {
-    console.log('Server is running on port 3000');
-})
+
+const PORT = process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+    console.log(` Server is running on port ${PORT}`);
+});
