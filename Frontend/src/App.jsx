@@ -41,7 +41,7 @@ function App() {
   }
 
   useEffect(() => {
-    let socketInstance = io("https://ai-chatbox-issu.onrender.com"); 
+    let socketInstance = io(import.meta.env.VITE_API_URL); 
     setSocket(socketInstance)
 
     socketInstance.on('ai-message-response', (response) => {
